@@ -1,6 +1,6 @@
 import express, { urlencoded } from 'express';
 import dotenv from 'dotenv';
-import connectDB from './config/db.js';
+import connectDB from './db/indexDb.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';    
 
@@ -21,18 +21,24 @@ app.use(express.urlencoded({extended: true, limit: '16kb'}));
 app.use(express.static('public'));
 app.use(cookieParser());
 
-connectDB().then(()=>{ 
+
+connectDB()
+    .then(() => {
 
 app.on('error', (err) => {
   console.error('Express server error:', err);
   throw err; // Rethrow the error to be caught by the outer try-catch
 })
 
+        app.listen(process.env.PORT, () => {
+            console.log(`Server is running on port ${process.env.PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error("MongoDB connection error!!!:", error);
+        process.exit(1);
+    });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
-}).catch((error)=>{
-  console.error('MongoDB connection error!!!:', error);
-  process.exit(1);
-}
-)});
+// routes imports
+import userRouter from './routes/user.routes.js'
+app.use("/api/v1/users" , userRouter)

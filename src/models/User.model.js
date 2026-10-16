@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 const userSchema = new Schema({
 
 username:{
-   require:true,
+   required:true,
    type:String,
    unique:true,
    lowercase:true,
@@ -14,7 +14,7 @@ username:{
 },
 
 email:{
-   require:true,
+   required:true,
    type:String,
    unique:true,
    lowercase:true,
@@ -23,20 +23,20 @@ email:{
 },
 
 fullname:{
-   require:true,
+   required:true,
    type:String,
    trim:true,
    index:true
 },
 
 Avatar:{
-   require:true,
+   required:true,
    type:String,//
   },
 
 CoverImage:{
 
-    type:string,
+    type:String,
 },
 
 watchHistory:[
@@ -48,12 +48,12 @@ watchHistory:[
 
 password:{
 
-    type:string,
-required: [true,"Password is Require"]},
+    type:String,
+    required: [true,"Password is Require"]},
 
 
 refreshToken:{
-    required:true
+    type:String
 }
 
 
@@ -62,11 +62,10 @@ refreshToken:{
 
 
 userSchema.pre("save" , async function(next){
- if(this.isModified("password"))return next();
+ if(!this.isModified("password")) return next();
 
- else{
-this.password = bcrypt.hash( this.password , 10);
-next();}
+ this.password = await bcrypt.hash(this.password, 10);
+ next();
 })
 
 
